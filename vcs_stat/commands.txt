@@ -1,0 +1,4 @@
+cvs -z3 -d:pserver:anonymous@cvs.savannah.nongnu.org:/sources/cvs rlog -b -N -S ccvs/doc
+
+
+cvs -z3 -d:pserver:anonymous@cvs.savannah.nongnu.org:/sources/cvs co -r 1.1 -p ccvs/README
