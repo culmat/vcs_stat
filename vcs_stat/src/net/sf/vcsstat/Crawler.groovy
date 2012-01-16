@@ -3,13 +3,6 @@ package net.sf.vcsstat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-class PathInfo {
-
-	def PathInfo(String path){
-		def ret = path.split('/')
-		def ext = ret[ret.length-1].split('\\.')
-	}
-}
 
 class Crawler {
 	static Pattern FILE = Pattern.compile('RCS file: (.*?),v')
@@ -19,9 +12,8 @@ class Crawler {
 	String path
 	static main(args) {
 		Crawler c = new Crawler()
-		//c.crawl()
+		c.crawl('ccvs/README')
 		println c.totalDelta
-		println pathInfo('ccvs/README').inspect()
 	}
 
 	String cvsCmd_ = 'cvs -z3 -Q -d:pserver:anonymous@cvs.savannah.nongnu.org:'
@@ -30,13 +22,20 @@ class Crawler {
 	String rlog = 'rlog -b -N -S -l '
 	String co = 'co -r 1.1 -p '
 
-	def crawl(){
+	static String trimSlash(String s){
+		String ret = s
+		if(ret.startsWith('/')) ret = ret.substring(1)
+		if(ret.endsWith('/')) ret = ret.substring(0, ret.length()-1)
+		return ret
+	}
 
-		String path = 'ccvs/README'
-		println "Crawling $path"
+
+	def crawl(String startPath){
+		startPath = trimSlash(startPath)
+		println "Crawling $startPath"
 
 		int i
-		(cvsCmd + rlog + path).execute().inputStream.eachLine{ line ->
+		(cvsCmd + rlog + startPath).execute().inputStream.eachLine{ line ->
 			Matcher m = FILE.matcher(line);
 			if (m.find()) {
 				recFile(m.group(1))
@@ -48,7 +47,7 @@ class Crawler {
 	}
 
 	def recFile(String path){
-		this.path = path - cvsContext - '/';
+		this.path = trimSlash(path - cvsContext - '/')
 		println path
 	}
 	def recRevision(Matcher m){
@@ -68,8 +67,15 @@ class Crawler {
 		cal.setTime(date)
 		int year = cal.get Calendar.YEAR
 		int week = year * 100 + cal.get (Calendar.WEEK_OF_YEAR)
+		def paths = path.split('/')
+		def exts = paths[paths.length-1].split('\\.')
 		try {
-			DB2.store(cvsContext,path,date,year,week,added,removed,delta,author)
+			DB2.store(cvsContext,path
+					,paths.length >1 ? paths[0]:null
+					,paths.length >2 ? paths[1]:null
+					,paths.length >3 ? paths[2]:null
+					,exts[exts.length-1]
+					,date,year,week,added,removed,delta,author)
 		} catch (Exception e){
 			println "Error storing $cvsContext $path $date"
 		}
