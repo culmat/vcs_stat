@@ -16,8 +16,8 @@ class DB2 {
 
 
 	public static void main(String[] args) {
-		db.eachRow("SELECT * from REVISION"){ println it }
-		db.eachRow("SELECT YEAR, AUTHOR,  count(*) from REVISION group by AUTHOR , YEAR"){ println it }
+		//db.eachRow("SELECT * from REVISION"){ println it }
+		db.eachRow("SELECT YEAR, AUTHOR, count(*) as SUM from REVISION group by AUTHOR , YEAR order by YEAR"){ println it }
 	}
 
 

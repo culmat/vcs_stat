@@ -3,6 +3,13 @@ package net.sf.vcsstat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
+class PathInfo {
+
+	def PathInfo(String path){
+		def ret = path.split('/')
+		def ext = ret[ret.length-1].split('\\.')
+	}
+}
 
 class Crawler {
 	static Pattern FILE = Pattern.compile('RCS file: (.*?),v')
@@ -12,8 +19,9 @@ class Crawler {
 	String path
 	static main(args) {
 		Crawler c = new Crawler()
-		c.crawl()
+		//c.crawl()
 		println c.totalDelta
+		println pathInfo('ccvs/README').inspect()
 	}
 
 	String cvsCmd_ = 'cvs -z3 -Q -d:pserver:anonymous@cvs.savannah.nongnu.org:'
@@ -60,7 +68,11 @@ class Crawler {
 		cal.setTime(date)
 		int year = cal.get Calendar.YEAR
 		int week = year * 100 + cal.get (Calendar.WEEK_OF_YEAR)
-		DB2.store(cvsContext,path,date,year,week,added,removed,delta,author)
+		try {
+			DB2.store(cvsContext,path,date,year,week,added,removed,delta,author)
+		} catch (Exception e){
+			println "Error storing $cvsContext $path $date"
+		}
 	}
 	String  countInitialRevision(){
 		String cmd = cvsCmd + co + path
