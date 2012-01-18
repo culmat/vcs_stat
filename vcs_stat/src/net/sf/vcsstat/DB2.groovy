@@ -59,10 +59,12 @@ class DB2 {
 		db.firstRow("SELECT count(*) from REVISION;")[0]
 	}
 
-	public static store(repo,path,path1,path2,path3,extension,ctime,year,week,added,removed,delta,author) {
+	public static store(repo,path,path1,path2,path3,extension,Date ctime,year,week,added,removed,delta,author) {
 		revisions.add(repo:repo,path:path,path1:path1,
 				path2:path2, path3:path3, extension:extension,
-				ctime:ctime,year:year,week:week,added:added,removed:removed,delta:delta,author:author)
+				ctime:ctime,year:year,week:week,
+				day: ctime.
+				added:added,removed:removed,delta:delta,author:author)
 	}
 
 

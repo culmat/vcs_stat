@@ -35,7 +35,11 @@ class Crawler {
 		println "Crawling $startPath"
 
 		int i
-		(cvsCmd + rlog + startPath).execute().inputStream.eachLine{ line ->
+		def cvsProcess = (cvsCmd + rlog + startPath).execute()
+		Thread.start {
+			cvsProcess.errorStream.eachLine { System.err.println it }
+		}
+		cvsProcess.inputStream.eachLine{ line ->
 			Matcher m = FILE.matcher(line);
 			if (m.find()) {
 				recFile(m.group(1))
@@ -45,6 +49,7 @@ class Crawler {
 			}
 		}
 	}
+
 
 	def recFile(String path){
 		this.path = trimSlash(path - cvsContext - '/')
