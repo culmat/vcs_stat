@@ -1,5 +1,4 @@
 package net.sf.vcsstat
-
 import groovy.sql.DataSet
 import groovy.sql.Sql
 
@@ -8,7 +7,6 @@ import java.text.SimpleDateFormat
 import javax.sql.DataSource
 
 import org.h2.jdbcx.JdbcConnectionPool
-
 class DB2 {
 
 	static DataSource source = JdbcConnectionPool.create("jdbc:h2:~/h2data.vcs_stat", "sa", "sa")
@@ -20,9 +18,9 @@ class DB2 {
 
 
 	public static void main(String[] args) {
-		revisions.each { println it }
+		//		revisions.each { println it }
 		//		db.eachRow("SELECT YEAR, AUTHOR, count(*) as SUM from REVISION group by AUTHOR , YEAR order by YEAR"){ println it }
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss Z")
 		println getLastEntry('ccvs/README','/sources/cvs')
 		String dates = "'"
 		dates += df.format(getLastEntry('ccvs/README','/sources/cvs'))
@@ -59,12 +57,29 @@ class DB2 {
 		db.firstRow("SELECT count(*) from REVISION;")[0]
 	}
 
-	public static store(repo,path,path1,path2,path3,extension,Date ctime,year,week,added,removed,delta,author) {
-		revisions.add(repo:repo,path:path,path1:path1,
-				path2:path2, path3:path3, extension:extension,
-				ctime:ctime,year:year,week:week,
-				day: ctime.
-				added:added,removed:removed,delta:delta,author:author)
+	public static store(repo,path,Date ctime,added,removed,author) {
+		Calendar cal = Calendar.instance
+		cal.setTime(ctime)
+		int year = cal.get Calendar.YEAR
+		int week = year * 100 + cal.get (Calendar.WEEK_OF_YEAR)
+		def paths = path.split('/')
+		def exts = paths[paths.length-1].split('\\.')
+		revisions.add(repo:repo
+				,path:path
+				,path1:paths.length >1 ? paths[0]:null
+				,path2:paths.length >2 ? paths[1]:null
+				,path3:paths.length >3 ? paths[2]:null
+				,extension:exts[exts.length-1]
+				,ctime:ctime
+				,year:year
+				,week:week
+				,day: cal.get(Calendar.DAY_OF_WEEK)
+				,hour: cal.get(Calendar.HOUR_OF_DAY)
+				,added:added
+				,removed:removed
+				,delta:(added - removed)
+				,author:author
+				)
 	}
 
 

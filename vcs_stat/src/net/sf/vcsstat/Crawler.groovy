@@ -64,23 +64,17 @@ class Crawler {
 		m.find()
 		int added = Integer.valueOf(m.group(1))
 		int removed = Integer.valueOf(m.group(2))
-		int delta = added - removed
+		int delta = (added - removed);
 		totalDelta += delta
 		Date date = Date.parse('yyyy-MM-dd HH:mm:ss Z', dateString)
 		println "$date -- $author -- $lines -- $delta"
-		Calendar cal = Calendar.getInstance()
-		cal.setTime(date)
-		int year = cal.get Calendar.YEAR
-		int week = year * 100 + cal.get (Calendar.WEEK_OF_YEAR)
-		def paths = path.split('/')
-		def exts = paths[paths.length-1].split('\\.')
 		try {
-			DB2.store(cvsContext,path
-					,paths.length >1 ? paths[0]:null
-					,paths.length >2 ? paths[1]:null
-					,paths.length >3 ? paths[2]:null
-					,exts[exts.length-1]
-					,date,year,week,added,removed,delta,author)
+			DB2.store(cvsContext,
+					path,
+					date,
+					added,
+					removed,
+					author)
 		} catch (Exception e){
 			println "Error storing $cvsContext $path $date"
 		}
