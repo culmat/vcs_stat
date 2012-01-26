@@ -172,10 +172,13 @@ class CVSCrawler {
 		int lc
 		//def cvsProcess = (cvsCmd + co + path).execute()
 		def cvsProcess = (['co', '-q', '-p'] + (mount+cvsContext+'/'+path+',v')).execute()
-		Thread.start {
+		Thread errdump = Thread.start {
 			System.err << cvsProcess.err
 		}
 		cvsProcess.in.eachLine { lc++ }
+		cvsProcess.err.close()
+		cvsProcess.in.close()
+		errdump.stop()
 		return "+$lc -0"
 	}
 }
