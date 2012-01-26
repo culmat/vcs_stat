@@ -31,15 +31,6 @@ class CVSCrawler {
 		new CVSCrawler(args[0],args[1],args[2],args[3] ).crawl(args[2])
 	}
 
-	private static dumpProc(def cmd){
-		def p = cmd.execute()
-		Thread.start {
-			System.err << p.err
-		}
-		Thread.start {
-			System.out << p.in
-		}.join()
-	}
 
 	private static getDateFrom(String path, String repo) {
 		def last = DB.getLastEntry(path, repo)
@@ -74,7 +65,7 @@ class CVSCrawler {
 		}
 		println ((cvsCmd + rlog + startPath).inspect())
 		def cvsProcess = (cvsCmd + rlog + startPath).execute()
-		Thread.start {
+		Thread errdump = Thread.startDaemon {
 			System.err << cvsProcess.err
 		}
 		cvsProcess.in.eachLine{ line ->
@@ -88,6 +79,7 @@ class CVSCrawler {
 			}
 		}
 		running = false
+		errdump.stop()
 		storeOps()
 		def duration = Format.time (System.currentTimeMillis()-startTime)
 		println "Finished at ${df2.format(new Date())} after $duration"
@@ -174,8 +166,8 @@ class CVSCrawler {
 	String  countInitialRevision(){
 		int lc
 		//def cvsProcess = (cvsCmd + co + path).execute()
-		def cvsProcess = (['co', '-q', '-p'] + (mount+cvsContext+'/'+path+',v')).execute()
-		Thread errdump = Thread.start {
+		def cvsProcess = (['co', '-q', '-p']+ (mount+cvsContext+'/'+path+',v')).execute()
+		Thread errdump = Thread.startDaemon {
 			System.err << cvsProcess.err
 		}
 		cvsProcess.in.eachLine { lc++ }
