@@ -1,2 +1,25 @@
 cvs -z3 -d:pserver:anonymous@cvs.savannah.nongnu.org:/sources/cvs rlog -b -N -S ccvs/doc
 cvs -z3 -d:pserver:anonymous@cvs.savannah.nongnu.org:/sources/cvs co -r 1.1 -p ccvs/README
+
+cvs -d:pserver:anonymous@traymenu.cvs.sourceforge.net:/cvsroot/traymenu export java
+
+
+cvs -z3 -Q -d:pserver:anonymous@traymenu.cvs.sourceforge.net:/cvsroot/traymenu rlog -b -N -S java/src/tmp.txt
+
+pserver:anonymous@traymenu.cvs.sourceforge.net /cvsroot/traymenu java
+pserver:anonymous@cvs.savannah.nongnu.org /sources/cvs ccvs
+
+
+
+cvs -z3 -d:pserver:test-cvsserver:/spu/test/cvs/test rlog -b -N -S feedbackDemo
+
+
+--- RLOG
+C:\cygwin\bin\rlog.exe J:\spu\test\cvs\test\feedbackDemo\tmp.txt,v
+C:\cygwin\bin\co.exe -p J:/spu\test/cvs/test/feedbackDemo/tmp.txt,v 
+
+
+rlog /mnt/spu/test/cvs/test/feedbackDemo\pom.xml,v
+co -p /mnt/spu/test/cvs/test/feedbackDemo\pom.xml,v
+
+cvs -z3 -Q -d:pserver:anonymous@traymenu.cvs.sourceforge.net:/cvsroot/traymenu
