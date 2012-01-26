@@ -62,11 +62,13 @@ class CVSCrawler {
 		long startTime = System.currentTimeMillis()
 		startPath = trimSlash(startPath)
 		println "Crawling $startPath at ${df2.format(new Date())}"
+		boolean running = true
 		Thread.startDaemon {
-			while(true) {
+			while(running) {
 				sleep 5000
 				def durationSec = (System.currentTimeMillis()-startTime)/1000
 				def filesPerSec = counter / durationSec
+				println "Curent location: $cvsContext $path"
 				println "Files: $counter \t Throughput $filesPerSec files/sec"
 			}
 		}
@@ -85,6 +87,7 @@ class CVSCrawler {
 				if(m.find()) recRevision m
 			}
 		}
+		running = false
 		storeOps()
 		def duration = Format.time (System.currentTimeMillis()-startTime)
 		println "Finished at ${df2.format(new Date())} after $duration"

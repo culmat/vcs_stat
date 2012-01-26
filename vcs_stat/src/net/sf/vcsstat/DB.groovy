@@ -41,7 +41,11 @@ class DB {
 
 		//db.eachRow("SELECT count( distinct path)   as pathCount from REVISION where path1='ivd'"){ println it }
 
-		println totalLines()
+		///spu/test/cvs/admin
+		
+		println repos()
+		
+		//println totalLines()
 
 	}
 
@@ -79,6 +83,11 @@ class DB {
 		nullIsZero db.firstRow("select sum(DELTA) from revision")[0]
 	}
 
+	public static repos() {
+		db.rows("select distinct repo from revision").collect {
+			it.REPO
+		}
+	}
 
 	public static Long nullIsZero(Long l){
 		l ? l : 0
@@ -90,6 +99,9 @@ class DB {
 
 
 	public static Date getLastEntry(String path, String repo) {
+		if(!path || "." == path){
+			return 	db.firstRow("SELECT max(CTIME) from REVISION where repo=?", repo)[0]
+		}
 		def paths = path.split('/')
 		def exts = paths[paths.length-1].split('\\.')
 		if(paths.length <= 1) {
