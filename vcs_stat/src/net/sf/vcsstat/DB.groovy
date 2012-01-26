@@ -22,13 +22,13 @@ class DB {
 	public static void main(String[] args) {
 
 		//revisions.each { println it }
-		//db.eachRow('SELECT * from REVISION  order by ctime '){ println it }
+		//db.eachRow("SELECT * from REVISION where path1='ivd'  order by ctime "){ println it }
 
 
 		//		db.eachRow("SELECT WEEK, AUTHOR, count(*) as COMMITS from REVISION group by AUTHOR , WEEK order by WEEK"){ println it }
 		//		db.eachRow("SELECT WEEK, AUTHOR, SUM(DELTA) as DELTA from REVISION group by AUTHOR , WEEK order by WEEK"){ println it }
 
-		byExtension()
+		//byExtension()
 
 		//		db.executeUpdate("delete from REVISION where path = 'java/src/tmp.txt'")
 		//db.eachRow("SELECT * from REVISION where path = 'java/src/tmp.txt'"){ println it }
@@ -37,9 +37,9 @@ class DB {
 
 		//		db.eachRow("SELECT distinct repo from REVISION"){ println it }
 
-		//		db.executeUpdate("delete from revision")
+		//		db.executeUpdate("delete from revision where path1='ivd'")
 
-		db.eachRow("SELECT count( distinct path)  as pathCount from REVISION "){ println it }
+		//db.eachRow("SELECT count( distinct path)   as pathCount from REVISION where path1='ivd'"){ println it }
 
 		println totalLines()
 

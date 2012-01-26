@@ -19,7 +19,8 @@ C:\cygwin\bin\rlog.exe J:\spu\test\cvs\test\feedbackDemo\tmp.txt,v
 C:\cygwin\bin\co.exe -p J:/spu\test/cvs/test/feedbackDemo/tmp.txt,v 
 
 
-rlog /mnt/spu/test/cvs/test/feedbackDemo\pom.xml,v
-co -p /mnt/spu/test/cvs/test/feedbackDemo\pom.xml,v
+rlog /mnt/spu/test/cvs/test/feedbackDemo/pom.xml,v
+co -p /mnt/spu/test/cvs/test/feedbackDemo/pom.xml,v
 
-cvs -z3 -Q -d:pserver:anonymous@traymenu.cvs.sourceforge.net:/cvsroot/traymenu
+cvs -z3 -Q -d:pserver:b028178@test-cvsserver:/spu/test/cvs/test co -p feedbackDemo/pom.xml
+cvs -z3 -Q -d:pserver:b028178@test-cvsserver:/spu/test/cvs/test rlog feedbackDemo/pom.xml

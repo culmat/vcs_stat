@@ -12,21 +12,23 @@ class CVSCrawler {
 	static Pattern LINES = Pattern.compile('\\+(\\d+) -(\\d+)')
 	String path
 	final String cvsContext
-	static def cvsCmd =  ['cvs', '-z3', '-Q']
-	final  def  co = ['co' , '-r' , '1.1', '-p']
+	final String mount
+	static def cvsCmd =  ['cvs', '-Q']
+	//final  def  co = ['co' , '-r' , '1.1', '-p']
 	final  def  rlog = ['rlog', '-b', '-N', '-S']
 
-	public CVSCrawler(String cvsroot, String repo, String startPath){
+	public CVSCrawler(String cvsroot, String repo, String startPath, String mnt){
 		rlog = rlog + getDateFrom(startPath,repo)
 		cvsCmd =  cvsCmd + "-d:$cvsroot:$repo"
 		cvsContext = repo
+		mount = mnt
 	}
 	static main(args) {
-		if(args.length < 3) {
-			println('usage: CVSCrawler <CVSROOT> <repo> <path>')
+		if(args.length < 4) {
+			println('usage: CVSCrawler <CVSROOT> <repo> <path> <mount>')
 			return
 		}
-		new CVSCrawler(args[0],args[1],args[2]).crawl(args[2])
+		new CVSCrawler(args[0],args[1],args[2],args[3] ).crawl(args[2])
 	}
 
 	private static dumpProc(def cmd){
@@ -60,9 +62,13 @@ class CVSCrawler {
 		long startTime = System.currentTimeMillis()
 		startPath = trimSlash(startPath)
 		println "Crawling $startPath at ${df2.format(new Date())}"
-		Thread.start {
-			sleep 5000
-			println "Files: $counter"
+		Thread.startDaemon {
+			while(true) {
+				sleep 5000
+				def durationSec = (System.currentTimeMillis()-startTime)/1000
+				def filesPerSec = counter / durationSec
+				println "Files: $counter \t Throughput $filesPerSec files/sec"
+			}
 		}
 		println ((cvsCmd + rlog + startPath).inspect())
 		def cvsProcess = (cvsCmd + rlog + startPath).execute()
@@ -88,7 +94,7 @@ class CVSCrawler {
 	def recFile(String path){
 		storeOps()
 		this.path = trimSlash(path - cvsContext - '/')
-		println path
+		//println path
 		counter++
 	}
 	List ops = []
@@ -164,7 +170,8 @@ class CVSCrawler {
 
 	String  countInitialRevision(){
 		int lc
-		def cvsProcess = (cvsCmd + co + path).execute()
+		//def cvsProcess = (cvsCmd + co + path).execute()
+		def cvsProcess = (['co', '-q', '-p'] + (mount+cvsContext+'/'+path+',v')).execute()
 		Thread.start {
 			System.err << cvsProcess.err
 		}
